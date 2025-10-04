@@ -4,19 +4,20 @@ let geocoder;
 let autocomplete;
 
 function initMap() {
-  const initialPosition = { lat: -10.408868, lng: -52.718718 };
+  const initialPosition = { lat: 39.704965, lng: -101.680907 };
 
   const mapOptions = {
     zoom: 4,
     center: initialPosition,
-    mapTypeControl: false,       // tira o seletor "Mapa / Satélite"
-    streetViewControl: false,    // tira o bonequinho do Street View
-    fullscreenControl: false,    // tira o botão de fullscreen
-    zoomControl: true,           // deixa o zoom manual (pode tirar se quiser)
-    disableDefaultUI: false,     // se quiser tirar TUDO, use "true"
+    mapTypeControl: false,       
+    streetViewControl: false,    
+    fullscreenControl: false,  
+    clickableIcons: false,  
+    zoomControl: true,           
+    disableDefaultUI: true,   
     styles: [
       {
-        featureType: "poi", // remove pontos de interesse (ex: restaurantes)
+        featureType: "poi", 
         elementType: "labels",
         stylers: [{ visibility: "off" }]
       },
@@ -39,8 +40,7 @@ function initMap() {
   const input = document.getElementById("addressInput");
   autocomplete = new google.maps.places.Autocomplete(input, {
     fields: ["geometry", "formatted_address"],
-    types: ["geocode"],
-    componentRestrictions: { country: "br" },
+    types: ["geocode"]
   });
 
   autocomplete.addListener("place_changed", () => {
@@ -66,8 +66,6 @@ function initMap() {
   });
 }
 
-const pos = 0
-
 function placeMarker(location) {
   if (marker) {
     marker.setPosition(location);
@@ -82,14 +80,13 @@ function placeMarker(location) {
       updateCoords(pos.lat(), pos.lng());
     });
   }
-
+  
   map.panTo(location);
   updateCoords(location.lat(), location.lng());
 }
 
 function updateCoords(lat, lng) {
-  document.getElementById("coords").innerText =
-    "Latitude: " + lat.toFixed(6) + ", Longitude: " + lng.toFixed(6);
+  document.getElementById("coords").innerText = "Latitude: " + lat.toFixed(6) + ", Longitude: " + lng.toFixed(6);
 }
 
 function searchAddress(address) {
@@ -105,16 +102,13 @@ function searchAddress(address) {
   });
 }
 
-const lat = pos.lat();
-console.log(lat)
-
 maxTemp = document.getElementById("max-temp")
 minTemp = document.getElementById("min-temp")
 btnTemp = document.getElementById("btn-temp")
 
-btnTemp.addEventListener("click", async () =>{
+btnTemp.addEventListener("click", async () => {
   try {
-    const response = await fetch("http://api.weatherapi.com/v1/future.json?key=741cb8159a274a2f952144447250410&q="+pos.lat+","+pos.lng+"&dt=2026-06-18")
+    const response = await fetch("http://api.weatherapi.com/v1/future.json?key=741cb8159a274a2f952144447250410&q=56.00,-90.00&dt=2026-06-18")
     if(!response.ok) throw new Error("Erro na requisição: "+response.status)
     const data = await response.json()
     console.log("Dados: ", data)
