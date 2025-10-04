@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Mapa com Busca</title>
+</head>
+<body>
+  <header>
+    <div>
+      <a href="#">
+        <img src="img/Pin.png" alt="Ícone do mapa" style="width: 25px;">
+      </a>
+      <input type="search" id="addressInput" placeholder="Type the address...">
+      <button id="searchBtn">Buscar</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="map-container">
+      <div id="map"></div>
+      <p id="coords"></p>
+    </div>
+    <div class="side-panel">
+      <p id="max-temp"></p>
+      <p id="min-temp"></p>
+      <input id="btn-temp" type="button" value="Pegar temperatura">
+    </div>
+  </main>
+
+  <footer></footer>
+
+  <script src="js/script.js"></script>
+
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDLVKZ_I2pPl9hpBaWGPGdiJpL-LZlmABg&libraries=places&callback=initMap"
+    async defer></script>
+</body>
+</html>
