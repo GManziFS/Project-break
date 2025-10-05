@@ -5,7 +5,18 @@ let autocomplete;
 let latitude;
 let longitude;
 let date;
-let response;
+
+// Elementos DOM (Mantidos para clareza)
+const maxTemp = document.getElementById("max-temp");
+const minTemp = document.getElementById("min-temp");
+const refTemp = document.getElementById("ref-temp"); 
+const iptDate = document.getElementById("dateInput");
+const btnBackMap = document.getElementById("backMap");
+const backGraph = document.getElementById("backGraph");
+
+// ====================================================================
+// FUNÇÕES DE MAPA E UTILIDADE
+// ====================================================================
 
 function initMap() {
     const initialPosition = { lat: 39.704965, lng: -101.680907 };
@@ -50,8 +61,7 @@ function initMap() {
     map.addListener("click", (event) => {
         const clickedLocation = event.latLng;
         placeMarker(clickedLocation);
-        document.body.classList.remove("dados-carregados");
-        document.body.classList.remove("grafico-ativo");
+        document.body.classList.remove("dados-carregados", "grafico-ativo");
     });
 }
 
@@ -87,72 +97,91 @@ function searchAddress(address) {
     });
 }
 
-const maxTemp = document.getElementById("max-temp");
-const minTemp = document.getElementById("min-temp");
-const iptDate = document.getElementById("dateInput");
-
-iptDate.addEventListener("change", () => { });
-
-const getInformation = async () => {
-    document.body.classList.add('dados-carregados');
-    mostrarGrafico();
-};
-
-const btnMapBack = document.getElementById("backMap");
-btnMapBack.addEventListener("click", () => {
-    document.body.classList.remove('dados-carregados');
-});
-
-function hideGrafico(){
+function hideGrafico() {
     document.body.classList.remove("grafico-ativo");
 }
 
-iptDate.addEventListener("change", () => {
-  
-})
+// ====================================================================
+// FUNÇÃO DE BUSCA E COMUNICAÇÃO COM BACKEND (CONSOLIDADA)
+// ====================================================================
 
-// Refatoração de lógica do código btn.Temp
+const getInformation = async () => {
+    date = iptDate.value;
 
-const async () => {
-  date = iptDate.value;
+    // 1. Validação de Entrada
+    if (!date) {
+        alert("Please select a date.");
+        return;
+    } 
+    if (!marker) {
+        alert("Please select a location.");
+        return;
+    }
 
-  if (!date) {
-    alert("Please select a date.");
-    return;
-  } else if (!marker) {
-    alert("Please select a location.");
-    return;
-  } else {
-    // Apaga temporariamente o conteúdo anterior e mostra carregando
-    maxTemp.innerText = "";
+    // 2. Feedback Visual
+    document.body.classList.add('dados-carregados');
+    mostrarGrafico(); 
     minTemp.innerText = "Carregando...";
-  }
+    maxTemp.innerText = "";
+    if (refTemp) refTemp.innerText = "";
 
-//   try {
-//     const BACKEND_URL = `/api/clima-completo?lat=${latitude}&lon=${longitude}&date=${date}`;
-//     const response = await fetch(BACKEND_URL);
+    try {
+        // 3. Chamada ao Backend (URL: http://localhost:3000/api/clima-completo)
+        const BACKEND_URL = `/api/clima-completo?lat=${latitude}&lon=${longitude}&date=${date}`;
+        const response = await fetch(BACKEND_URL);
 
-//     if (!response.ok) {
-//       throw new Error("Communication with the server has been lost: " + response.status);
-//     }const data = await response.json();
-//     console.log("Final Results: ", data);
-    
-//     minTemp.innerText = `Temperatura mínima: ${data.temperatura_min_prevista}`;
-//     maxTemp.innerText = `Temperatura Máxima: ${data.temperatura_max_prevista}`;   
-    
-//     // Mostra a referência da NASA para contexto
-//     document.getElementById("ref-temp").innerText = 
-//         `Ref. Histórica (NASA): ${data.temperatura_media_historica}`;
+        if (!response.ok) {
+            // Se o Node.js retornar um erro (403, 500), lemos a mensagem detalhada
+            const errorData = await response.json();
+            throw new Error(`Servidor: ${errorData.detalhe || errorData.error}`);
+        }
 
-//   } catch (error) {
-//     console.error("Error: ", error);
-//     minTemp.innerText = "";
-//     maxTemp.innerText = "";
-//     alert("Erro ao obter a previsão: " + error.message);
-//   }
+        // 4. Exibição dos Dados Finais
+        const data = await response.json();
+        console.log("Final Results: ", data);
+        
+        minTemp.innerText = `Temp. Mín. Prevista: ${data.temperatura_min_prevista} °C`;
+        maxTemp.innerText = `Temp. Máxima Prevista: ${data.temperatura_max_prevista} °C`;
+
+        if (refTemp) {
+            refTemp.innerText = `Ref. Histórica (NASA): ${data.temperatura_media_historica} °C (Anomalia: ${data.anomalia_temp} °C)`;
+        }
+
+        // Atualizar o gráfico aqui, passando 'data'
+        // atualizarGraficoComDadosReais(data);
+
+    } catch (error) {
+        console.error("Error: ", error);
+        minTemp.innerText = "N/A";
+        maxTemp.innerText = "N/A";
+        if (refTemp) refTemp.innerText = "";
+        alert("Erro ao obter a previsão: " + error.message);
+    }
+};
+
+// ====================================================================
+// LISTENERS DE BOTÕES CORRIGIDOS E SIMPLIFICADOS
+// ====================================================================
+
+// Listener do botão de Esconder/Mostrar o Painel Lateral
+btnBackMap.addEventListener("click", () => {
+    document.body.classList.toggle("dados-carregados"); 
 });
 
-// Mostrar gráfico embaixo do mapa e encolher mapa
+// Listener do botão de Esconder/Mostrar o Gráfico
+backGraph.addEventListener("click", () => {
+    document.body.classList.toggle("grafico-ativo");
+});
+
+// Listener para a mudança de data (limpa classes)
+iptDate.addEventListener("change", () => { 
+    document.body.classList.remove("dados-carregados", "grafico-ativo");
+});
+
+// ====================================================================
+// FUNÇÃO MOSTRAR GRÁFICO (Mantida com dados mock)
+// ====================================================================
+
 function mostrarGrafico() {
     if (!window.graficoCriado) {
         const ctx = document.getElementById('climaChart');
