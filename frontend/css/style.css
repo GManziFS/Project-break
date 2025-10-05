@@ -70,7 +70,7 @@ main {
 
 #map {
     width: 95%;
-    height: 690px;
+    height: 95%;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: height 0.6s ease;
@@ -94,6 +94,19 @@ body.grafico-ativo #map {
 
 body.grafico-ativo #graficoContainer {
     display: block;
+}
+
+body.grafico-ativo #backGraph {
+    transform: rotate(90deg);
+}
+
+#backMap {
+    transform: rotate(0deg);
+    transition: transform 0.4s ease;
+}
+
+body.hideSide #backMap {
+    transform: rotate(180deg);
 }
 
 .side-panel-ini {
@@ -160,7 +173,7 @@ body.dados-carregados .info-card-ini img {
     display: none;
 }
 
-body.dados-carregados .icon-btn {
+body.slideBtn .icon-btn {
     display: flex;
 }
 
@@ -178,16 +191,17 @@ body.dados-carregados .icon-btn {
     width: 50px;
 }
 
-body.dados-carregados #backGraph {
+body.slideBtn #backGraph {
     display: flex;
 }
 
 #backGraph {
-    transform: rotate(90deg);
+    transform: rotate(-90deg);
     background: none;
     border: none;
     cursor: pointer;
     padding: 5px;
     border-radius: 5px;margin-left: auto;
     display: none;
+    transition: all 0.3s ease;
 }

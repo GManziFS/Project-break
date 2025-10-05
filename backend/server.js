@@ -1,7 +1,16 @@
 // backend/server.js
+<<<<<<< HEAD
 
 // --- 1. Configurações e Chave ---
 const WEATHER_API_KEY = "585c4fb4448e43c7b3e185623250510"; // Hardcoded (Para teste)
+=======
+// const path = require('path');
+
+// require('dotenv').config({path: path.resolve(__dirname, '../.env')});
+const WEATHER_API_KEY = "e8563a4a764d45cab5f104656250510";
+
+console.log("Variável carregada: ", !!WEATHER_API_KEY); // Deve ser 'true'
+>>>>>>> 59ca26eb894c5d48ef1e39020ca2c8e38af52514
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
@@ -43,6 +52,7 @@ app.get('/api/clima-completo', async (req, res) => {
         // 1. Definição da URL de SUCESSO (Forecast de 14 dias)
         const weatherApiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=14&aqi=yes&alerts=yes`;
 
+<<<<<<< HEAD
         // 2. Validação para retornar 403 (Evita erros de plano ao chamar histórico/futuro distante)
         if (userDate.getTime() < currentDate.getTime()) {
             return res.status(403).json({
@@ -57,6 +67,24 @@ app.get('/api/clima-completo', async (req, res) => {
             });
         }
         
+=======
+        if (userDate.getTime() < currentDate.getTime()) {
+            return res.status(403).json({
+                error: "Dados indisponíveis (Histórico)",
+                detalhe: "O plano atual da API não permite consultas de dados passados"
+            });
+        }
+
+        if (userDate.getTime() > currentDate.getTime() + futureLimit) {
+            return res.status(403).json({
+                error: "Dados indisponíveis (Futuro Distante)",
+                detalhe: "A API de previsão esta limitada a 14 dias. A data selecionada está fora desse limite."
+            });
+        }
+
+        weatherApiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=14&aqi=yes&alerts=yes`;
+
+>>>>>>> 59ca26eb894c5d48ef1e39020ca2c8e38af52514
         // URL da NASA POWER: Climatologia Personalizada (1990 - 2025)
         const nasaClimatologyUrl = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M,PRECTOTCORR&community=AG&longitude=${lon}&latitude=${lat}&format=JSON&start=1990&end=2025`;
 
