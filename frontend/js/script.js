@@ -118,8 +118,17 @@ backGraph.addEventListener("click", () => {
     }
 });
 
+btnBackMap.addEventListener("click", () => {
+    document.body.classList.toggle("dados-carregados");
+    document.body.classList.toggle("hideSide");
+});
+
 function hideGrafico() {
     document.body.classList.remove("grafico-ativo");
+}
+
+function hideSide(){
+    document.body.classList.remove("sidePanel");
 }
 
 const getInformation = async () => {
