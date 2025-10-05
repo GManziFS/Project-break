@@ -4,10 +4,19 @@
   "description": "Servidor Node.js para APIs Climáticas",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",  
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["clima", "nasa", "api"],
+  "keywords": [
+    "clima",
+    "nasa",
+    "api"
+  ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
 }

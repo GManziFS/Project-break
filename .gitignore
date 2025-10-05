@@ -1,0 +1,16 @@
+# .gitignore
+
+# 1. Variáveis de Ambiente e Segurança
+# Protege a chave de API da WeatherAPI.com e outras variáveis secretas
+.env
+.env.local
+
+# 2. Pastas de Dependência
+# Ignora a pasta 'node_modules' no backend (que é gigante e deve ser instalada localmente)
+/backend/node_modules/
+
+# 3. Arquivos de Log, Cache e Temporários
+npm-debug.log
+*.log
+.DS_Store # Mac
+Thumbs.db # Windows

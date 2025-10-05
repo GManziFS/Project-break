@@ -120,68 +120,45 @@ iptDate.addEventListener("change", () => {
   
 })
 
-
+// Refatoração de lógica do código btn.Temp
 
 btnTemp.addEventListener("click", async () => {
-  date = iptDate.value
-  if(!date){
-    alert("Please select a date.")
-    return
-  }else if (!marker) {
-    alert("Please select a local.")
-    return
-  }else {
-    maxTemp.innerText = ""
-    minTemp.innerText = "Carregando..."
+  date = iptDate.value;
+
+  if (!date) {
+    alert("Please select a date.");
+    return;
+  } else if (!marker) {
+    alert("Please select a location.");
+    return;
+  } else {
+    // Apaga temporariamente o conteúdo anterior e mostra carregando
+    maxTemp.innerText = "";
+    minTemp.innerText = "Carregando...";
   }
 
-  const currentDate = new Date();
-
-  const userDate = new Date(date);
-
-  console.log("Hoje: ",currentDate)
-  console.log("antes: ",userDate)
-  
-  const pastApi = `http://api.weatherapi.com/v1/history.json?key=741cb8159a274a2f952144447250410&q=${latitude},${longitude}&dt=${date}`
-  const currentApi = `http://api.weatherapi.com/v1/forecast.json?key=741cb8159a274a2f952144447250410&q=${latitude},${longitude}&days=14&aqi=yes&alerts=yes`
-  const futureApi = `http://api.weatherapi.com/v1/future.json?key=741cb8159a274a2f952144447250410&q=${latitude},${longitude}&dt=${date}`
-
-  const mlsecInDay = 24 * 60 * 60 * 1000;
-  const futureLimit = 14 * mlsecInDay;
-
   try {
-    if(userDate.getTime() == currentDate.getTime() || (userDate.getTime() > currentDate.getTime() && userDate.getTime() < currentDate.getTime() + futureLimit)){
-      response = await fetch(currentApi);
-    } else if (userDate.getTime() < currentDate.getTime()) {
-      response = await fetch(pastApi);
-    } else {
-      response = await fetch(futureApi);
+    const BACKEND_URL = `/api/clima-completo?lat=${latitude}&lon=${longitude}&date=${date}`;
+    const response = await fetch(BACKEND_URL);
+
+    if (!response.ok) {
+      throw new Error("Communication with the server has been lost: " + response.status);
     }
-  
-    if (!response.ok) throw new Error("Erro na requisição: " + response.status);
-  
+
     const data = await response.json();
-    console.log("Dados:", data);
-    console.log(response)
-  
-    let forecastDay;
-  
-    if (response.url.includes("forecast.json")) {
-      const forecastDayData = data.forecast.forecastday.find(day => day.date === date);
-      if (!forecastDayData) throw new Error("Previsão para a data selecionada não encontrada.");
-      forecastDay = forecastDayData.day;
-    } else {
-      forecastDay = data.forecast.forecastday[0].day;
-    }
-  
-    minTemp.innerText = `Temperatura mínima: ${forecastDay.mintemp_c} °C`;
-    maxTemp.innerText = `Temperatura máxima: ${forecastDay.maxtemp_c} °C`;
-  
+    console.log("Final Results: ", data);
+    
+    minTemp.innerText = `Temperatura mínima: ${data.temperatura_min_prevista}`;
+    maxTemp.innerText = `Temperatura Máxima: ${data.temperatura_max_prevista}`;   
+    
+    // Mostra a referência da NASA para contexto
+    document.getElementById("ref-temp").innerText = 
+        `Ref. Histórica (NASA): ${data.temperatura_media_historica}`;
+
   } catch (error) {
-    console.error("Erro:", error);
+    console.error("Error: ", error);
     minTemp.innerText = "";
     maxTemp.innerText = "";
     alert("Erro ao obter a previsão: " + error.message);
   }
-  
 });
