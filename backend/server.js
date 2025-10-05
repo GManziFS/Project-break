@@ -1,6 +1,9 @@
 // backend/server.js
-require('dotenv').config();
-const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+// const path = require('path');
+
+// require('dotenv').config({path: path.resolve(__dirname, '../.env')});
+const WEATHER_API_KEY = "e8563a4a764d45cab5f104656250510";
+
 console.log("Variável carregada: ", !!WEATHER_API_KEY); // Deve ser 'true'
 const express = require('express');
 const axios = require('axios'); // Necessário para fazer as chamadas de API
@@ -32,17 +35,21 @@ app.get('/api/clima-completo', async (req, res) => {
 
         let weatherApiUrl; // Variável padronizada e consistente
 
-        // Determina qual endpoint usar (Forecast, History ou Future)
-        if (userDate.getTime() <= currentDate.getTime() + futureLimit && userDate.getTime() >= currentDate.getTime()) {
-            // CASO: Futuro próximo (até 14 dias), usa forecast.json
-            weatherApiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=14&aqi=yes&alerts=yes`;
-        } else if (userDate.getTime() < currentDate.getTime()) {
-            // CASO: Passado, usa history.json
-            weatherApiUrl = `http://api.weatherapi.com/v1/history.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&dt=${date}`;
-        } else {
-            // CASO: Futuro distante, usa future.json
-            weatherApiUrl = `http://api.weatherapi.com/v1/future.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&dt=${date}`;
+        if (userDate.getTime() < currentDate.getTime()) {
+            return res.status(403).json({
+                error: "Dados indisponíveis (Histórico)",
+                detalhe: "O plano atual da API não permite consultas de dados passados"
+            });
         }
+
+        if (userDate.getTime() > currentDate.getTime() + futureLimit) {
+            return res.status(403).json({
+                error: "Dados indisponíveis (Futuro Distante)",
+                detalhe: "A API de previsão esta limitada a 14 dias. A data selecionada está fora desse limite."
+            });
+        }
+
+        weatherApiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=14&aqi=yes&alerts=yes`;
 
         // URL da NASA POWER: Climatologia Personalizada (1990 - 2025)
         const nasaClimatologyUrl = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M,PRECTOTCORR&community=AG&longitude=${lon}&latitude=${lat}&format=JSON&start=1990&end=2025`;
