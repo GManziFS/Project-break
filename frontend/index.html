@@ -2,9 +2,10 @@
 <html lang="pt-br">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <title>Mapa com Busca</title>
 </head>
 
@@ -12,10 +13,10 @@
   <header>
     <div class="search-container">
       <a href="#">
-        <img src="img/Pin.png" alt="Ícone do mapa" style="width: 25px;">
+        <img src="img/Pin.png" alt="Ícone do mapa" style="width: 25px;" />
       </a>
-      <input type="search" id="addressInput" placeholder="Type the address...">
-      <input type="date" id="dateInput">
+      <input type="search" id="addressInput" placeholder="Type the address..." />
+      <input type="date" id="dateInput" />
       <button id="searchBtn">Search</button>
     </div>
   </header>
@@ -24,35 +25,53 @@
     <div class="map-container-ini">
       <div id="map"></div>
       <p id="coords"></p>
+
+      <button id="backGraph" class="icon-btn" onclick="hideGrafico()">
+        <img src="img/back-map.png" alt="Voltar" />
+      </button>
+
+      <div id="graficoContainer" class="grafico-card">
+        <h5 class="mb-3 fw-bold">Previsão Climática - Próximos 15 Dias</h5>
+        <canvas id="climaChart"></canvas>
+      </div>
     </div>
-    <div class="side-panel">
+    <div class="side-panel-ini">
       <div class="info-card-ini">
-        <h4>Temperatura</h4>
+        <img src="img/termometer.png" />
+        <h4>Temperature</h4>
         <p>24°C</p>
       </div>
 
       <div class="info-card-ini">
-        <h4>Umidade</h4>
+        <img src="img/humidity.png" />
+        <h4>Humidity</h4>
         <p>60%</p>
       </div>
 
       <div class="info-card-ini">
-        <h4>Velocidade do Vento</h4>
+        <img src="img/wind.png" />
+        <h4>Wind speed</h4>
         <p>15 km/h</p>
       </div>
 
       <div class="info-card-ini">
-        <h4>Pressão Atmosférica</h4>
+        <img src="img/atm-machine.png" />
+        <h4>At. pressure</h4>
         <p>1015 hPa</p>
       </div>
+
       <p id="max-temp"></p>
       <p id="min-temp"></p>
-      <input id="btn-temp" type="button" value="Pegar temperatura">
+
+      <button id="backMap" class="icon-btn">
+        <img src="img/back-map.png" alt="Voltar" />
+      </button>
     </div>
   </main>
 
   <footer></footer>
 
+  <!-- Scripts -->
   <script src="js/script.js"></script>
 
   <script
