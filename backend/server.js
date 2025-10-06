@@ -1,16 +1,8 @@
 // backend/server.js
-<<<<<<< HEAD
 
 // --- 1. Configurações e Chave ---
-const WEATHER_API_KEY = "585c4fb4448e43c7b3e185623250510"; // Hardcoded (Para teste)
-=======
-// const path = require('path');
-
-// require('dotenv').config({path: path.resolve(__dirname, '../.env')});
-const WEATHER_API_KEY = "e8563a4a764d45cab5f104656250510";
-
-console.log("Variável carregada: ", !!WEATHER_API_KEY); // Deve ser 'true'
->>>>>>> 59ca26eb894c5d48ef1e39020ca2c8e38af52514
+// CHAVE HARDCODED: Para contornar o problema de ambiente (Solução temporária de debug)
+const WEATHER_API_KEY = "585c4fb4448e43c7b3e185623250510"; 
 const express = require('express');
 const axios = require('axios');
 const path = require('path');
@@ -18,8 +10,8 @@ const cors = require('cors');
 const app = express();
 const PORT = 3000;
 
-// Configuração do CORS
-const allowedOrigins = ['http://localhost:5500'];
+// Configuração do CORS para permitir comunicação com o frontend (5500 e 127.0.0.1)
+const allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500'];
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -31,11 +23,10 @@ app.use(cors({
     }
 }));
 
-// DEBUG: Confirma que a variável está no escopo
-console.log("Variável carregada: ", !!WEATHER_API_KEY); 
+// --- 2. ROTA PRINCIPAL DA API ---
 
-// --- 2. ROTA PRINCIPAL DA API (DEVE VIR ANTES DO MIDDLEWARE ESTÁTICO) ---
 app.get('/api/clima-completo', async (req, res) => {
+    
     const { lat, lon, date } = req.query; 
 
     if (!lat || !lon || !date) {
@@ -52,8 +43,7 @@ app.get('/api/clima-completo', async (req, res) => {
         // 1. Definição da URL de SUCESSO (Forecast de 14 dias)
         const weatherApiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=14&aqi=yes&alerts=yes`;
 
-<<<<<<< HEAD
-        // 2. Validação para retornar 403 (Evita erros de plano ao chamar histórico/futuro distante)
+        // 2. Validação de Plano (Retorno 403 se for passado ou futuro distante)
         if (userDate.getTime() < currentDate.getTime()) {
             return res.status(403).json({
                 error: "Dados indisponíveis (Histórico)",
@@ -66,27 +56,9 @@ app.get('/api/clima-completo', async (req, res) => {
                 detalhe: "A previsão está limitada a 14 dias pelo seu plano de API. Selecione uma data dentro desse limite."
             });
         }
-        
-=======
-        if (userDate.getTime() < currentDate.getTime()) {
-            return res.status(403).json({
-                error: "Dados indisponíveis (Histórico)",
-                detalhe: "O plano atual da API não permite consultas de dados passados"
-            });
-        }
 
-        if (userDate.getTime() > currentDate.getTime() + futureLimit) {
-            return res.status(403).json({
-                error: "Dados indisponíveis (Futuro Distante)",
-                detalhe: "A API de previsão esta limitada a 14 dias. A data selecionada está fora desse limite."
-            });
-        }
-
-        weatherApiUrl = `http://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${lat},${lon}&days=14&aqi=yes&alerts=yes`;
-
->>>>>>> 59ca26eb894c5d48ef1e39020ca2c8e38af52514
-        // URL da NASA POWER: Climatologia Personalizada (1990 - 2025)
-        const nasaClimatologyUrl = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M,PRECTOTCORR&community=AG&longitude=${lon}&latitude=${lat}&format=JSON&start=1990&end=2025`;
+        // URL da NASA POWER: Climatologia Personalizada (1990 - 2024)
+        const nasaClimatologyUrl = `https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=T2M,PRECTOTCORR&community=AG&longitude=${lon}&latitude=${lat}&format=JSON&start=1990&end=2024`;
 
         // --- 2.2 CHAMADAS DE API (Executadas em Paralelo) ---
         const [weatherResponse, nasaResponse] = await Promise.all([
@@ -98,27 +70,47 @@ app.get('/api/clima-completo', async (req, res) => {
         const nasaData = nasaResponse.data;
 
         // --- 3. LÓGICA DE PROCESSAMENTO E COMPARAÇÃO FINAL ---
+
+        // 3.1. Dados para o dia alvo (Painel Lateral)
         const forecastDayData = weatherData.forecast.forecastday.find(day => day.date === date) || weatherData.forecast.forecastday[0];
         const diaTargetWeather = forecastDayData.day;
 
         const tempMinPrevista = diaTargetWeather.mintemp_c;
         const tempMaxPrevista = diaTargetWeather.maxtemp_c;
+        const tempMediaPrevista = diaTargetWeather.avgtemp_c; 
         const chuvaPrevista = diaTargetWeather.totalprecip_mm;
+        const umidadeMediaPrevista = diaTargetWeather.avghumidity;
+        const ventoMaxPrevisto = diaTargetWeather.maxwind_kph; 
 
+        // Extração da Climatologia (Referência)
         const mesConsulta = new Date(date).toLocaleString('en-US', { month: 'short' }).toUpperCase(); 
         const tempMediaHistorica = nasaData.properties.parameter.T2M[mesConsulta] || -999;
-        const chuvaMediaHistorica = nasaData.properties.parameter.PRECTOTCORR[mesConsulta] || -999;
         const anomaliaTemperatura = tempMaxPrevista - tempMediaHistorica;
 
-        // O JSON final limpo para o frontend
+
+        // 3.2. Dados para o Gráfico (14 dias)
+        const dadosGrafico = weatherData.forecast.forecastday.map(day => ({
+            date: day.date,
+            temp_avg: day.day.avgtemp_c,
+            humidity_avg: day.day.avghumidity,
+            precip_prob: day.day.daily_chance_of_rain 
+        }));
+
+        // 3.3. O JSON final limpo para o frontend
         const dadosParaFrontend = {
             data_consulta: date,
-            temperatura_min_prevista: `${tempMinPrevista.toFixed(2)} °C`,
-            temperatura_max_prevista: `${tempMaxPrevista.toFixed(2)} °C`,
-            precipitacao_prevista: `${chuvaPrevista.toFixed(2)} mm`,
-            temperatura_media_historica: `${tempMediaHistorica.toFixed(2)} °C`,
-            precipitacao_media_historica: `${chuvaMediaHistorica.toFixed(2)} mm/dia`,
-            anomalia_temp: `${anomaliaTemperatura.toFixed(2)} °C`
+            // Previsão do Dia Alvo (Painel)
+            temperatura_min_prevista: `${tempMinPrevista.toFixed(1)} °C`,
+            temperatura_max_prevista: `${tempMaxPrevista.toFixed(1)} °C`,
+            temperatura_media_prevista: `${tempMediaPrevista.toFixed(1)} °C`, 
+            precipitacao_prevista: `${chuvaPrevista.toFixed(1)} mm`,
+            umidade_media_prevista: `${umidadeMediaPrevista.toFixed(0)} %`, 
+            vento_max_previsto: `${ventoMaxPrevisto.toFixed(1)} km/h`, 
+            // Referência Histórica (Painel)
+            temperatura_media_historica: `${tempMediaHistorica.toFixed(1)} °C`,
+            anomalia_temp: `${anomaliaTemperatura.toFixed(1)} °C`,
+            // Dados para o Gráfico (14 Dias)
+            dados_grafico: dadosGrafico 
         };
         
         // 4. ENVIA O RESULTADO FINAL
@@ -144,10 +136,10 @@ app.get('/api/clima-completo', async (req, res) => {
     }
 });
 
-// --- 3. MIDDLEWARE ESTÁTICO (DEVE VIR APÓS A ROTA DA API) ---
-// app.use(express.static(path.join(__dirname, '../frontend')));
+// --- 3. MIDDLEWARE ESTÁTICO ---
+// app.use(express.static(path.join(__dirname, '../frontend'))); 
 
-// --- 4. Inicialização do Servidor (DEVE VIR POR ÚLTIMO) ---
+// --- 4. Inicialização do Servidor ---
 app.listen(PORT, () => {
     console.log(`Servidor Node.js rodando e pronto para receber requisições em http://localhost:${PORT}`);
 });

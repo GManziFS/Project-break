@@ -36,33 +36,34 @@
         <canvas id="climaChart"></canvas>
       </div>
     </div>
+    
     <div class="side-panel-ini">
       <div class="info-card-ini">
         <img src="img/termometer.png" />
-        <h4>Temperature</h4>
-        <p>24°C</p>
-      </div>
-
+        <h4>Temperatura Mínima/Máxima</h4>
+        <p id="min-temp">-- °C</p> <p id="max-temp">-- °C</p> </div>
+      
       <div class="info-card-ini">
         <img src="img/humidity.png" />
-        <h4>Humidity</h4>
-        <p>60%</p>
+        <h4>Precipitação Prevista</h4>
+        <p id="precip-prevista">-- mm</p>
       </div>
-
+      
       <div class="info-card-ini">
         <img src="img/wind.png" />
-        <h4>Wind speed</h4>
-        <p>15 km/h</p>
+        <h4>Umidade Média</h4>
+        <p id="umidade-media">-- %</p>
       </div>
-
+      
       <div class="info-card-ini">
         <img src="img/atm-machine.png" />
-        <h4>At. pressure</h4>
-        <p>1015 hPa</p>
+        <h4>Vento Médio</h4>
+        <p id="vento-medio">-- km/h</p>
       </div>
 
-      <p id="max-temp"></p>
-      <p id="min-temp"></p>
+      <p id="ref-temp" style="font-size: 0.9em; margin-top: 15px; font-weight: bold;">
+        Referência Histórica: N/A
+      </p>
 
       <button id="backMap" class="icon-btn">
         <img src="img/back-map.png" alt="Voltar" />
@@ -72,7 +73,6 @@
 
   <footer></footer>
 
-  <!-- Scripts -->
   <script src="js/script.js"></script>
 
   <script
