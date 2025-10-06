@@ -8,10 +8,14 @@ const axios = require('axios');
 const path = require('path');
 const cors = require('cors');
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Configuração do CORS para permitir comunicação com o frontend (5500 e 127.0.0.1)
-const allowedOrigins = ['http://localhost:5500', 'http://127.0.0.1:5500'];
+const allowedOrigins = [
+    'http://localhost:5500',
+    'http://127.0.0.1:5500',
+    'https://project-break-x1kk.onrender.com',
+    'https://project-break-two.vercel.app/'];
 
 app.use(cors({
     origin: function (origin, callback) {
@@ -141,5 +145,5 @@ app.get('/api/clima-completo', async (req, res) => {
 
 // --- 4. Inicialização do Servidor ---
 app.listen(PORT, () => {
-    console.log(`Servidor Node.js rodando e pronto para receber requisições em http://localhost:${PORT}`);
+    console.log(`Servidor rodando na porta ${PORT}`);
 });
