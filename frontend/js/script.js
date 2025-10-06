@@ -101,7 +101,7 @@ function searchAddress(address) {
             map.setZoom(14);
             placeMarker(location);
         } else {
-            alert("Endereço não encontrado: " + status);
+            alert("Addres not found: " + status);
         }
     });
 }
@@ -126,18 +126,18 @@ const getInformation = async () => {
 
     // 1. Validação de Entrada
     if (!selectedDate) {
-        alert("Por favor, selecione uma data.");
+        alert("Please, select a date.");
         return;
     } 
     if (!marker) {
-        alert("Por favor, selecione uma localização.");
+        alert("Please, Select a location.");
         return;
     }
 
     // 2. Feedback Visual
     document.body.classList.add('dados-carregados');
     // Limpa campos antes de carregar
-    minTemp.innerText = "Carregando...";
+    minTemp.innerText = "Loading...";
     maxTemp.innerText = "";
     if (avgTemp) avgTemp.innerText = "";
     if (refTemp) refTemp.innerText = "";
@@ -152,7 +152,7 @@ const getInformation = async () => {
 
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(`Servidor: ${errorData.detalhe || errorData.error}`);
+            throw new Error(`Server: ${errorData.detalhe || errorData.error}`);
         }
 
         // 4. Processa o corpo da resposta em JSON
@@ -167,7 +167,7 @@ const getInformation = async () => {
         ventoMedio.innerText = data.vento_max_previsto; 
 
         if (refTemp) {
-            refTemp.innerText = `Ref. Histórica: ${data.temperatura_media_historica} (Anomalia: ${data.anomalia_temp})`;
+            refTemp.innerText = `History Reference: ${data.temperatura_media_historica} (Anomalia: ${data.anomalia_temp})`;
         }
         
         // 6. Atualização do Gráfico com Dados REAIS
@@ -185,7 +185,7 @@ const getInformation = async () => {
         ventoMedio.innerText = "N/A";
         if (refTemp) refTemp.innerText = "N/A";
         
-        alert("Erro ao obter a previsão: " + error.message);
+        alert("Error to catch prevision: " + error.message);
     }
 };
 
@@ -240,19 +240,19 @@ function mostrarGrafico(dadosGrafico) {
                 labels: dias,
                 datasets: [
                     { 
-                        label: 'Temperatura Média (°C)', 
+                        label: 'Average temperature (°C)', 
                         data: temperatura, 
                         backgroundColor: 'rgba(255, 99, 132, 0.5)', 
                         borderRadius: 6 
                     },
                     { 
-                        label: 'Umidade Média (%)', 
+                        label: 'Average Humidity (%)', 
                         data: umidade, 
                         backgroundColor: 'rgba(54, 162, 235, 0.5)', 
                         borderRadius: 6 
                     },
                     { 
-                        label: 'Probabilidade de Chuva (%)', 
+                        label: 'Probability Of Rain (%)', 
                         data: chuva, 
                         type: 'line', 
                         borderColor: 'rgba(75, 192, 192, 1)', 
@@ -271,10 +271,10 @@ function mostrarGrafico(dadosGrafico) {
                         min: 0, 
                         max: 100, 
                         ticks: { stepSize: 20 },
-                        title: { display: true, text: 'Umidade / Chuva (%)' }
+                        title: { display: true, text: 'Humidity / Rain (%)' }
                     },
                     x: { 
-                        title: { display: true, text: 'Próximos Dias' } 
+                        title: { display: true, text: 'Next days' } 
                     }
                 },
                 plugins: { legend: { position: 'bottom' } }
