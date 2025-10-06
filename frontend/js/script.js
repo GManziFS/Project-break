@@ -20,7 +20,7 @@ const umidadeMedia = document.getElementById("umidade-media");
 const ventoMedio = document.getElementById("vento-medio");     
 
 // Base URL para o backend
-const baseUrl = "http://localhost:3000"; 
+const baseUrl = "https://project-break-x1kk.onrender.com"; 
 const dayInMls = 24 * 60 * 60 * 1000; 
 
 // ====================================================================
